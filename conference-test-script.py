@@ -480,6 +480,7 @@ class ConferenceApi(remote.Service):
         
         # query and return sessions by conference key
         sessions = Session.query(ancestor=conference_key).fetch()
+        print 'these are the sessions', sessions
         
         # create empty variable to store session keys in 
         wssks = []
@@ -489,6 +490,8 @@ class ConferenceApi(remote.Service):
 
             #append each obtained websafe key to wssks list
             wssks.append(sessions[i].key.urlsafe())
+        
+        print 'these are the websafe session keys', wssks
         
         # return set of SessionForm objects per Conference in required 
         # response format
@@ -574,7 +577,7 @@ class ConferenceApi(remote.Service):
         # get session; check that it exists
         wssk = request.websafeSessionKey
         session = ndb.Key(urlsafe=wssk).get()
-        
+        print 'this is session:', session
         # raise error if 'session' has no value
         if not session:
             raise endpoints.NotFoundException(
@@ -619,8 +622,10 @@ class ConferenceApi(remote.Service):
         # return profile entity
         prof = self._getProfileFromUser()
 
+
         # return list of session websafe keys in profile entity
         wssks = prof.sessionKeysToAttend
+        print 'list of websafe keys', wssks
         
         # create empty variable to store session entities in
         sessions = []
@@ -633,6 +638,7 @@ class ConferenceApi(remote.Service):
             
             # append session entity to empty list
             sessions.append(session)
+        print 'list of session entities', sessions
 
         # create cleaned version of wssks where wssk not a repeated 
         #field with 'u' preceding key
@@ -640,6 +646,9 @@ class ConferenceApi(remote.Service):
         wssks_clean = []
         for i in range(len(sessions)):
             wssks_clean.append(sessions[i].key.urlsafe())
+
+        print 'list of websafe keys clean', wssks_clean
+
 
         # return response ready form for each session key in list
         return SessionForms(
@@ -667,6 +676,8 @@ class ConferenceApi(remote.Service):
         # query all profiles for given websafe key
         profiles = Profile.query(
             Profile.conferenceKeysToAttend == wsck).fetch()
+        
+        print 'these are the profiles: ', profiles
 
         # create empty list variables to put iterables from profiles in 
         names = []
@@ -677,12 +688,15 @@ class ConferenceApi(remote.Service):
         for i in range(len(profiles)):
             tShirts.append(profiles[i].teeShirtSize)
             names.append(profiles[i].displayName)
+        print names,tShirts
 
         # merge lists and store them into a new dict variable, 
         # convert to string to be handled by outgoing message response
         output = str(dict(zip(names, tShirts)))
+        print output
 
         return StringMessage(data=output)
+
 
     @endpoints.method(message_types.VoidMessage, SessionForms,
             path='sessions',
@@ -752,6 +766,7 @@ class ConferenceApi(remote.Service):
         # filter query by speaker name in request
         sessions = Session.query(ancestor=c_key).filter(
             Session.speaker == sessionSpeaker).order(Session.name).fetch()
+        print 'sessions:', sessions
 
         # if there is more than one session with the same speaker, 
         # set message to memcache
@@ -763,7 +778,7 @@ class ConferenceApi(remote.Service):
                 ', '.join(session.name for session in sessions))
             # set the memcache for the most recent speaker and their sessions
             memcache.set(MEMCACHE_FEATURED_SPEAKER_KEY, featured_speaker)
-            
+            print 'featured_speaker', featured_speaker
         # return empty if condition is not met
         else:
             featured_speaker = ""
