@@ -61,11 +61,32 @@ I have chosen to implement the Session entities as children of a Conference enti
 Speakers I have chosen to implement as stringfields. Although it would have been possible to create Speakers as seperate entities, I did not think it was worthwhile since later in task 4 all speaker related reponses are stored in memchache using queues
 
 Regarding the data modelling choices, I have chosen to add:
--Session entity
--SessionForm protorpc that follows the Session model data types but additionally includes the websafeKey and organiserDisplayName to include in the API response
--SessionForms protorpc in case of returning multiple session objects in a response
+-Session class: this creates session entities in Datastore
+	-name (StringProperty, required): each session needs as a minimum a name
+	-highlights (StringProperty, repeated): noteworthy higlights of a session, multiple possible
+	-speaker (StringProperty): name of the speaker 
+	-duration (IntegerProperty): how long the session lasts in whole hours
+	-sessionType (StringProperty): the type denomination of session, for the sake of this assigment exercise it can be: workshop, keynote or lecture. A session can only have one type
+	-date (DateProperty): date in format yyyy-mm-dd, although most sessions will fall  on the same dates as conferences, there could be edge cases (eg. a concert starting at 24.00) where it would be useful for a session object to have its own date. 
+	-startTime (TimeProperty): time in format h:m, where h takes values of 0-24 and m takes values of 0-59
+-SessionForm protorpc class: follows the Session model data types but additionally includes the websafeKey and organiserDisplayName to include in the API response:
+	-name (StringField): each session needs as a minimum a name
+	-highlights (StringField, repeated): noteworthy higlights of a session, multiple possible
+	-speaker (StringField): name of the speaker
+	-duration (StringField): how long the session lasts in whole hours
+	-sessionType (StringField): the type denomination of session, for the sake of this assigment exercise it can be: workshop, keynote or lecture. A session can only have one type
+	-date (StringField): date in format yyyy-mm-dd
+	-starttime (StringField): time in format h:m, where h takes values of 0-24 and takes values of 0-59
+	-websafeKey (StringField): websafe version of session key
+	organizerDisplayName (StringField): name of conference organizer creating a session
+-SessionForms protorpc in case of returning multiple session objects in a response:
+	-items:
 -SessionQueryForm as Session query inbound form message
+	-field:
+	-operator:
+	-value:
 -SessionQueryForms as multiple SessionQueryForm inbound form messages
+	-filters:
 
 Be sure to enter into all date fields the date as YYYY-MM-DD (eg. 2015-06-04)
 Be sure to enter into all time fields the time as HH (eg. 18 for 18.00 or 6pm)
@@ -81,9 +102,9 @@ For all queries the API can execute a entry has been added to the index.yaml fil
 
 Task 3b)
 
-Query1: because each conference has many attendees, the organisers have to know how many t-shirts to order and in what sizes. The endpoint will return a dict object containing all participants attending the conference and their t-shirt sizes, so the conference team know what to order at the t-shirt shop. 
+Query1 ('getTeeShirtsForConference'): because each conference has many attendees, the organisers have to know how many t-shirts to order and in what sizes. The endpoint will return a dict object containing all participants attending the conference and their t-shirt sizes, so the conference team know what to order at the t-shirt shop. 
 
-Query2: because business slows down in the summer, this is the ideal time for prospective participants to attend sessions in a conference. But first they need to know which sessions actually takke place in the summer. This query filters sessions by the summer season 06/21/2015-09/22/2015 and returns those sessions (if any - tip: use createSession endpoint to make a summer conference for testing purposes).
+Query2 ('getConferenceSessionInSummer'): because business slows down in the summer, this is the ideal time for prospective participants to attend sessions in a conference. But first they need to know which sessions actually takke place in the summer. This query filters sessions by the summer season 06/21/2015-09/22/2015 and returns those sessions (if any - tip: use createSession endpoint to make a summer conference for testing purposes).
 
 Task 3c)
 
