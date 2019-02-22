@@ -13,7 +13,7 @@ Project 4: Conference Organisation App
 
 """
 
-__author__ = 'wesc+api@google.com (Wesley Chun), amhar.ford@gmail.com'
+__author__ = 'amhar.ford@gmail.com'
 
 
 from datetime import datetime
